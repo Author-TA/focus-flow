@@ -1,11 +1,79 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTaskStore } from '@/hooks/useTaskStore';
+import FocusScreen from '@/pages/FocusScreen';
+import TaskListScreen from '@/pages/TaskListScreen';
+import { Zap, ListTodo } from 'lucide-react';
 
 const Index = () => {
+  const [activeTab, setActiveTab] = useState<'focus' | 'tasks'>('focus');
+  const store = useTaskStore();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="flex flex-col h-screen bg-background overflow-hidden max-w-md mx-auto relative">
+      {/* Page Content */}
+      <div className="flex-1 overflow-hidden">
+        <AnimatePresence mode="wait">
+          {activeTab === 'focus' ? (
+            <motion.div
+              key="focus"
+              className="h-full"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2 }}
+            >
+              <FocusScreen
+                firstTask={store.getFirstTomorrowTask()}
+                onComplete={store.completeTask}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="tasks"
+              className="h-full"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.2 }}
+            >
+              <TaskListScreen
+                tasks={store.tasks}
+                getActiveTasks={store.getActiveTasks}
+                getCompletedTasks={store.getCompletedTasks}
+                getDeletedTasks={store.getDeletedTasks}
+                addTask={store.addTask}
+                deleteTask={store.deleteTask}
+                reorderTasks={store.reorderTasks}
+                resetAll={store.resetAll}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Tab Bar */}
+      <div className="border-t border-border bg-background/90 backdrop-blur-lg safe-bottom">
+        <div className="flex">
+          <button
+            onClick={() => setActiveTab('focus')}
+            className={`flex-1 flex flex-col items-center py-3 gap-1 transition-colors ${
+              activeTab === 'focus' ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
+            <Zap className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Focus</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('tasks')}
+            className={`flex-1 flex flex-col items-center py-3 gap-1 transition-colors ${
+              activeTab === 'tasks' ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
+            <ListTodo className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Tasks</span>
+          </button>
+        </div>
       </div>
     </div>
   );
