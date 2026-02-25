@@ -1,7 +1,6 @@
 workflows:
   build:
     name: Build APK
-    description: Build APK file for Android
     scripts:
       - name: Install dependencies
         script: |
