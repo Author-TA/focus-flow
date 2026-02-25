@@ -29,8 +29,11 @@ interface TaskListScreenProps {
   getDeletedTasks: () => Task[];
   addTask: (title: string, description: string, dueTime?: string, filter?: FilterType) => void;
   deleteTask: (id: string) => void;
+  recoverTask: (id: string) => void;
   reorderTasks: (filter: FilterType, ids: string[]) => void;
   resetAll: () => void;
+  isDark: boolean;
+  onToggleTheme: () => void;
 }
 
 export default function TaskListScreen({
@@ -40,8 +43,11 @@ export default function TaskListScreen({
   getDeletedTasks,
   addTask,
   deleteTask,
+  recoverTask,
   reorderTasks,
   resetAll,
+  isDark,
+  onToggleTheme,
 }: TaskListScreenProps) {
   const [filter, setFilter] = useState<FilterType>('tomorrow');
   const [showCreate, setShowCreate] = useState(false);
@@ -86,6 +92,7 @@ export default function TaskListScreen({
           <DeletedSheet
             tasks={getDeletedTasks()}
             onClose={() => setShowDeleted(false)}
+            onRecover={recoverTask}
           />
         )}
         {showSettings && (
@@ -93,6 +100,8 @@ export default function TaskListScreen({
             tasks={tasks}
             onReset={resetAll}
             onClose={() => setShowSettings(false)}
+            isDark={isDark}
+            onToggleTheme={onToggleTheme}
           />
         )}
       </AnimatePresence>

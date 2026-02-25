@@ -50,6 +50,10 @@ export function useTaskStore() {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, status: 'deleted', deletedAt: new Date().toISOString() } : t));
   }, []);
 
+  const recoverTask = useCallback((id: string) => {
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, status: 'active', deletedAt: undefined } : t));
+  }, []);
+
   const reorderTasks = useCallback((filter: FilterType, reorderedIds: string[]) => {
     setTasks(prev => {
       const updated = [...prev];
@@ -92,6 +96,7 @@ export function useTaskStore() {
     addTask,
     completeTask,
     deleteTask,
+    recoverTask,
     reorderTasks,
     moveToFilter,
     resetAll,
