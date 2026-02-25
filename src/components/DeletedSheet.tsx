@@ -1,14 +1,15 @@
 import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, RotateCcw } from 'lucide-react';
 import { Task } from '@/types/task';
 import { format } from 'date-fns';
 
 interface DeletedSheetProps {
   tasks: Task[];
   onClose: () => void;
+  onRecover: (id: string) => void;
 }
 
-export function DeletedSheet({ tasks, onClose }: DeletedSheetProps) {
+export function DeletedSheet({ tasks, onClose, onRecover }: DeletedSheetProps) {
   return (
     <motion.div
       className="fixed inset-0 z-30 bg-background flex flex-col"
@@ -29,13 +30,22 @@ export function DeletedSheet({ tasks, onClose }: DeletedSheetProps) {
           <p className="text-center text-muted-foreground text-sm mt-8">No deleted tasks</p>
         ) : (
           tasks.map(task => (
-            <div key={task.id} className="bg-card border border-border rounded-xl p-3 mb-2">
-              <h4 className="text-sm font-semibold text-foreground">{task.title}</h4>
-              {task.deletedAt && (
-                <p className="text-xs text-destructive mt-1">
-                  Deleted {format(new Date(task.deletedAt), 'MMM d, h:mm a')}
-                </p>
-              )}
+            <div key={task.id} className="bg-card border border-border rounded-xl p-3 mb-2 flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-semibold text-foreground">{task.title}</h4>
+                {task.deletedAt && (
+                  <p className="text-xs text-destructive mt-1">
+                    Deleted {format(new Date(task.deletedAt), 'MMM d, h:mm a')}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={() => onRecover(task.id)}
+                className="shrink-0 p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                title="Recover task"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
             </div>
           ))
         )}

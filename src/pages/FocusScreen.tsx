@@ -7,13 +7,15 @@ import { CelebrationAnimation } from '@/components/CelebrationAnimation';
 interface FocusScreenProps {
   firstTask: Task | null;
   onComplete: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
-export default function FocusScreen({ firstTask, onComplete }: FocusScreenProps) {
+export default function FocusScreen({ firstTask, onComplete, onDelete }: FocusScreenProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [swipeX, setSwipeX] = useState(0);
+  const [swipeRightX, setSwipeRightX] = useState(0);
   const touchStartX = useRef(0);
   const activeTask = isPlaying ? firstTask : null;
 
@@ -24,6 +26,7 @@ export default function FocusScreen({ firstTask, onComplete }: FocusScreenProps)
   const handlePause = () => {
     setIsPlaying(false);
     setSwipeX(0);
+    setSwipeRightX(0);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -32,14 +35,28 @@ export default function FocusScreen({ firstTask, onComplete }: FocusScreenProps)
 
   const handleTouchMove = (e: React.TouchEvent) => {
     const diff = touchStartX.current - e.touches[0].clientX;
-    if (diff > 0) setSwipeX(Math.min(diff, 200));
+    if (diff > 0) {
+      setSwipeX(Math.min(diff, 200));
+      setSwipeRightX(0);
+    } else {
+      setSwipeRightX(Math.min(-diff, 200));
+      setSwipeX(0);
+    }
   };
 
   const handleTouchEnd = () => {
     if (swipeX > 100) {
       setShowConfirm(true);
     }
+    if (swipeRightX > 100 && activeTask) {
+      onDelete(activeTask.id);
+      // Stay playing — next task will auto-show
+      setSwipeRightX(0);
+      setSwipeX(0);
+      return;
+    }
     setSwipeX(0);
+    setSwipeRightX(0);
   };
 
   const handleConfirmYes = useCallback(() => {
@@ -51,7 +68,7 @@ export default function FocusScreen({ firstTask, onComplete }: FocusScreenProps)
 
   const handleConfirmNo = () => {
     setShowConfirm(false);
-    setIsPlaying(false);
+    // Stay playing, don't reset
   };
 
   const handleCelebrationComplete = useCallback(() => {
@@ -59,7 +76,7 @@ export default function FocusScreen({ firstTask, onComplete }: FocusScreenProps)
       onComplete(activeTask.id);
     }
     setShowCelebration(false);
-    setIsPlaying(false);
+    // Stay playing — next task will auto-show via firstTask prop
   }, [activeTask, onComplete]);
 
   return (
@@ -111,7 +128,7 @@ export default function FocusScreen({ firstTask, onComplete }: FocusScreenProps)
         <AnimatePresence mode="wait">
           {activeTask ? (
             <motion.div
-              key="task"
+              key={activeTask.id}
               className="w-full max-w-sm"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -122,15 +139,25 @@ export default function FocusScreen({ firstTask, onComplete }: FocusScreenProps)
             >
               <motion.div
                 className="bg-card border border-border rounded-2xl p-6 relative overflow-hidden"
-                style={{ x: -swipeX }}
+                style={{ x: swipeRightX > 0 ? swipeRightX : -swipeX }}
               >
-                {/* Swipe indicator */}
+                {/* Left swipe indicator (complete) */}
                 {swipeX > 0 && (
                   <div
                     className="absolute right-0 top-0 bottom-0 flex items-center justify-center bg-success/20"
                     style={{ width: swipeX }}
                   >
                     <span className="text-success text-xs font-medium">✓ Done</span>
+                  </div>
+                )}
+
+                {/* Right swipe indicator (delete) */}
+                {swipeRightX > 0 && (
+                  <div
+                    className="absolute left-0 top-0 bottom-0 flex items-center justify-center bg-destructive/20"
+                    style={{ width: swipeRightX }}
+                  >
+                    <span className="text-destructive text-xs font-medium">🗑 Delete</span>
                   </div>
                 )}
 
@@ -147,8 +174,19 @@ export default function FocusScreen({ firstTask, onComplete }: FocusScreenProps)
                   </div>
                 )}
 
-                <p className="text-xs text-muted-foreground mt-4 text-center">← Swipe left to complete</p>
+                <p className="text-xs text-muted-foreground mt-4 text-center">← Complete · Delete →</p>
               </motion.div>
+            </motion.div>
+          ) : isPlaying && !firstTask ? (
+            <motion.div
+              key="no-more"
+              className="text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <h2 className="text-2xl font-bold text-foreground mb-2">All done! 🎉</h2>
+              <p className="text-muted-foreground text-sm">No more tasks in your Tomorrow list</p>
             </motion.div>
           ) : (
             <motion.div

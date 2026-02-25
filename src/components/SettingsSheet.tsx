@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { X, Download, RotateCcw } from 'lucide-react';
+import { X, Download, RotateCcw, Moon, Sun } from 'lucide-react';
 import { Task } from '@/types/task';
 import { exportTasksToCSV } from '@/utils/csvExport';
 import { useState } from 'react';
@@ -8,9 +8,11 @@ interface SettingsSheetProps {
   tasks: Task[];
   onReset: () => void;
   onClose: () => void;
+  isDark: boolean;
+  onToggleTheme: () => void;
 }
 
-export function SettingsSheet({ tasks, onReset, onClose }: SettingsSheetProps) {
+export function SettingsSheet({ tasks, onReset, onClose, isDark, onToggleTheme }: SettingsSheetProps) {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const exportFiltered = (filter: string) => {
@@ -50,6 +52,19 @@ export function SettingsSheet({ tasks, onReset, onClose }: SettingsSheetProps) {
       </div>
 
       <div className="flex-1 overflow-auto px-4 pb-8 space-y-6">
+        {/* Theme Toggle */}
+        <div>
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Appearance</h3>
+          <button
+            onClick={onToggleTheme}
+            className="flex items-center gap-3 w-full bg-card border border-border rounded-xl p-3 text-sm text-foreground"
+          >
+            {isDark ? <Moon className="w-4 h-4 text-primary" /> : <Sun className="w-4 h-4 text-primary" />}
+            <span>{isDark ? 'Dark Mode' : 'Light Mode'}</span>
+            <span className="ml-auto text-xs text-muted-foreground">Tap to switch</span>
+          </button>
+        </div>
+
         {/* Export Section */}
         <div>
           <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Export as CSV</h3>

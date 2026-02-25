@@ -90,8 +90,8 @@ export default {
           "100%": { transform: "translateY(100vh) rotate(720deg)", opacity: "0" },
         },
         "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 20px -5px hsl(215 90% 55% / 0.3)" },
-          "50%": { boxShadow: "0 0 40px -5px hsl(215 90% 55% / 0.6)" },
+          "0%, 100%": { boxShadow: "0 0 20px -5px hsl(152 60% 40% / 0.3)" },
+          "50%": { boxShadow: "0 0 40px -5px hsl(152 60% 40% / 0.6)" },
         },
       },
       animation: {
