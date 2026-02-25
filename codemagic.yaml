@@ -1,0 +1,17 @@
+workflows:
+  build:
+    name: Build APK
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install
+      - name: Sync Capacitor with Android platform
+        script: |
+          npx cap sync android
+      - name: Build the app
+        script: |
+          npm run build
+      - name: Build APK using Gradle
+        script: |
+          cd android
+          ./gradlew assembleDebug
