@@ -45,6 +45,7 @@ const Index = () => {
                 getCompletedTasks={store.getCompletedTasks}
                 getDeletedTasks={store.getDeletedTasks}
                 addTask={store.addTask}
+                updateTask={store.updateTask}
                 deleteTask={store.deleteTask}
                 recoverTask={store.recoverTask}
                 reorderTasks={store.reorderTasks}

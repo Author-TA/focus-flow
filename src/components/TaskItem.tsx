@@ -6,9 +6,10 @@ import { Task } from '@/types/task';
 interface TaskItemProps {
   task: Task;
   onDelete: (id: string) => void;
+  onTap: (task: Task) => void;
 }
 
-export function TaskItem({ task, onDelete }: TaskItemProps) {
+export function TaskItem({ task, onDelete, onTap }: TaskItemProps) {
   const {
     attributes,
     listeners,
@@ -37,7 +38,7 @@ export function TaskItem({ task, onDelete }: TaskItemProps) {
       >
         <GripVertical className="w-4 h-4" />
       </button>
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 cursor-pointer" onClick={() => onTap(task)}>
         <h3 className="font-semibold text-foreground text-sm truncate">{task.title}</h3>
         {task.description && (
           <p className="text-xs text-muted-foreground truncate mt-0.5">{task.description}</p>

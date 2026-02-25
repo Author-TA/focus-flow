@@ -69,6 +69,10 @@ export function useTaskStore() {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, filter } : t));
   }, []);
 
+  const updateTask = useCallback((id: string, title: string, description: string, dueTime?: string, filter?: FilterType) => {
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, title, description, dueTime, filter: filter || t.filter } : t));
+  }, []);
+
   const resetAll = useCallback(() => {
     setTasks([]);
     localStorage.removeItem(STORAGE_KEY);
@@ -94,6 +98,7 @@ export function useTaskStore() {
   return {
     tasks,
     addTask,
+    updateTask,
     completeTask,
     deleteTask,
     recoverTask,

@@ -18,6 +18,7 @@ import { Plus, Trophy, Trash2, Settings } from 'lucide-react';
 import { FilterType, Task } from '@/types/task';
 import { TaskItem } from '@/components/TaskItem';
 import { TaskCreation } from '@/components/TaskCreation';
+import { TaskEditSheet } from '@/components/TaskEditSheet';
 import { AchievementsSheet } from '@/components/AchievementsSheet';
 import { DeletedSheet } from '@/components/DeletedSheet';
 import { SettingsSheet } from '@/components/SettingsSheet';
@@ -28,6 +29,7 @@ interface TaskListScreenProps {
   getCompletedTasks: () => Task[];
   getDeletedTasks: () => Task[];
   addTask: (title: string, description: string, dueTime?: string, filter?: FilterType) => void;
+  updateTask: (id: string, title: string, description: string, dueTime?: string, filter?: FilterType) => void;
   deleteTask: (id: string) => void;
   recoverTask: (id: string) => void;
   reorderTasks: (filter: FilterType, ids: string[]) => void;
@@ -42,6 +44,7 @@ export default function TaskListScreen({
   getCompletedTasks,
   getDeletedTasks,
   addTask,
+  updateTask,
   deleteTask,
   recoverTask,
   reorderTasks,
@@ -54,6 +57,7 @@ export default function TaskListScreen({
   const [showAchievements, setShowAchievements] = useState(false);
   const [showDeleted, setShowDeleted] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   const activeTasks = getActiveTasks(filter);
 
@@ -80,6 +84,13 @@ export default function TaskListScreen({
             onAdd={addTask}
             onClose={() => setShowCreate(false)}
             currentFilter={filter}
+          />
+        )}
+        {editingTask && (
+          <TaskEditSheet
+            task={editingTask}
+            onSave={updateTask}
+            onClose={() => setEditingTask(null)}
           />
         )}
         {showAchievements && (
@@ -141,7 +152,7 @@ export default function TaskListScreen({
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={activeTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
               {activeTasks.map(task => (
-                <TaskItem key={task.id} task={task} onDelete={deleteTask} />
+                <TaskItem key={task.id} task={task} onDelete={deleteTask} onTap={setEditingTask} />
               ))}
             </SortableContext>
           </DndContext>
