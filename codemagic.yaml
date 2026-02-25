@@ -1,4 +1,4 @@
-workflows:
+     workflows:
   build:
     name: Build APK
     scripts:
@@ -11,7 +11,8 @@ workflows:
       - name: Build the app
         script: |
           npm run build
-      - name: Build APK using Gradle
+      - name: Set Gradle permissions and build APK
         script: |
+          chmod +x android/gradlew      # Ensures gradlew is executable
           cd android
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug       # Build APK
