@@ -5,8 +5,13 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-      - name: Build APK
+      - name: Sync Capacitor with Android platform
         script: |
           npx cap sync android
+      - name: Build the app
+        script: |
           npm run build
-          npx cap open android
+      - name: Build APK using Gradle
+        script: |
+          cd android
+          ./gradlew assembleDebug
